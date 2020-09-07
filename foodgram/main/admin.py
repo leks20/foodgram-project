@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (Amount, Favorite, Follow, Ingredient, Recipe,
-                     ShoppingList, User)
+                     ShopList, User)
 
 
 @admin.register(Recipe)
@@ -14,6 +14,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return result
 
     show_favorite_number.short_description = "Favorite"
+
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -32,15 +33,15 @@ class AmountAdmin(admin.ModelAdmin):
 
 
 @admin.register(Favorite)
-class AmountAdmin(admin.ModelAdmin):
+class FavoriteAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(Follow)
-class AmountAdmin(admin.ModelAdmin):
+class FollowAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ShoppingList)
-class AmountAdmin(admin.ModelAdmin):
+@admin.register(ShopList)
+class ShopListAdmin(admin.ModelAdmin):
     pass

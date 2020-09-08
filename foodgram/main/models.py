@@ -20,21 +20,21 @@ class User(AbstractUser):
     confirmation_code = models.CharField(max_length=100, blank=True, )
 
     def __str__(self):
-        return self.username
+        return f'{self.first_name} {self.last_name}'
 
 
 class Tag(models.Model):
-    MEALTIME = [
-        ('1', 'Breakfast'),
-        ('2', 'Lunch'),
-        ('3', 'Dinner'),
-    ]
-    name = models.CharField(max_length=50, choices=MEALTIME)
+    name = models.CharField('Тег', max_length=50)
+    style = models.CharField('Стиль для шаблона', max_length=50, null=True)
+    human_name = models.CharField('Имя для шаблона', max_length=50, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=200)  # choice = ...
-    unit = models.CharField(max_length=50)  # choice = ...
+    title = models.CharField(max_length=200)
+    unit = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
@@ -49,12 +49,12 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    title = models.CharField(max_length=200)
+    title = models.CharField('Наименование', max_length=200)
     image = models.ImageField(upload_to='main/', null=True, blank=True)
-    description = models.TextField()
-    tag = models.ManyToManyField(Tag)
+    description = models.TextField('Описание')
+    tags = models.ManyToManyField(Tag)
     ingredients = models.ManyToManyField(Ingredient, through='Amount')
-    time = models.DurationField()
+    time = models.IntegerField('Время приготовления')
     slug = models.SlugField(unique=True)
 
     def __str__(self):
@@ -82,7 +82,7 @@ class Favorite(models.Model):
     )
 
 
-class Follow(models.Model):
+class Subscription(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -104,4 +104,3 @@ class ShopList(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='shop_list'
     )
-

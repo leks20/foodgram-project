@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from main.models import Amount, Follow, Ingredient, Recipe, User
+from main.models import Amount, Subscription, Ingredient, Recipe, User
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
@@ -40,7 +40,7 @@ def profile(request, username):
     page = paginator.get_page(page_number)
 
     if request.user.is_authenticated:
-        if Follow.objects.filter(user=request.user, author=profile).count():
+        if Subscription.objects.filter(user=request.user, author=profile).count():
             following = True
     if request.user != profile:
         follow_button = True
@@ -75,7 +75,7 @@ def recipe_edit(request, username, recipe_id):
     return render(request, "formChangeRecipe.html", context)
 
 
-def favorite(request):
+def favorites(request):
     context = {}
     return render(request, "favorite.html", context)
 
@@ -88,11 +88,11 @@ def purchases(request):
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    if request.user == author or Follow.objects.filter(
+    if request.user == author or Subscription.objects.filter(
             user=request.user, author=author).exists():
         return redirect("profile", username=username)
     else:
-        Follow.objects.create(user=request.user, author=author)
+        Subscription.objects.create(user=request.user, author=author)
         return redirect("profile", username=username)
 
 
@@ -102,16 +102,16 @@ def profile_unfollow(request, username):
     if request.user == author:
         return redirect("profile", username=username)
     else:
-        following = Follow.objects.get(user=request.user, author=author)
+        following = Subscription.objects.get(user=request.user, author=author)
         following.delete()
         return redirect("profile", username=username)
 
 
-def profile_following(request):
+def subscriptions(request):
     
-    followings = Follow.objects.filter(user=request.user).values('author')
+    subscriptions = Subscription.objects.filter(user=request.user).values('author')
 
-    recipes_list = Recipe.objects.filter(author__in=followings).order_by("-pub_date")
+    recipes_list = Recipe.objects.filter(author__in=subscriptions).order_by("-pub_date")
 
     paginator = Paginator(recipes_list, 5)
     page_number = request.GET.get('page')

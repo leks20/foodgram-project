@@ -4,8 +4,8 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('new/', views.new_recipe, name="new_recipe"),
-    path("favorite/", views.favorite, name="favorite"),
-    path("following/", views.profile_following, name="profile_following"),
+    path("favorites/", views.favorites, name="favorites"),
+    path("subscriptions/", views.subscriptions, name="subscriptions"),
     path("purchases/", views.purchases, name="purchases"),
     path("<username>/", views.profile, name="profile"),
     path("<username>/follow/", views.profile_follow, name="profile_follow"),

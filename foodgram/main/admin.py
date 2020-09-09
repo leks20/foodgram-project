@@ -39,7 +39,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('follower', 'following')
 
 
 @admin.register(ShopList)

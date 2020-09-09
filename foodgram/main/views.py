@@ -3,13 +3,13 @@ from main.models import Amount, Subscription, Ingredient, Recipe, User
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-
+from django.db.models import Count
 
 def index(request):
     recipe_list = Recipe.objects.select_related(
         'author').order_by('-pub_date')
 
-    paginator = Paginator(recipe_list, 5)
+    paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
@@ -108,17 +108,20 @@ def profile_unfollow(request, username):
 
 
 def subscriptions(request):
-    
-    subscriptions = Subscription.objects.filter(user=request.user).values('author')
 
-    recipes_list = Recipe.objects.filter(author__in=subscriptions).order_by("-pub_date")
+    subscription_ids = Subscription.objects.filter(user=request.user).values('author_id')
 
-    paginator = Paginator(recipes_list, 5)
+    subscriptions = User.objects.filter(id__in=subscription_ids).annotate(recipe_count=Count('recipes'))
+
+    recipes_list = Recipe.objects.select_related('author').order_by("-pub_date")
+
+    paginator = Paginator(subscriptions, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
     return render(request, 'myFollow.html', {
         'paginator': paginator,
-        'page': page
+        'page': page,
+        'recipes_list': recipes_list
     }
     )

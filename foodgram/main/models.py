@@ -55,7 +55,6 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag)
     ingredients = models.ManyToManyField(Ingredient, through='Amount')
     time = models.IntegerField('Время приготовления')
-    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.title
@@ -93,6 +92,15 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         related_name="following"
     )
+
+    def __str__(self):
+        return self.user.username
+
+    def follower(self):
+        return self.user.username
+
+    def following(self):
+        return self.author.username
 
 
 class ShopList(models.Model):

@@ -5,6 +5,8 @@
 <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock static %}
 {% block content %}
+{% include 'nav.html' with index=True %}
+
 <main class="main container">
     
     <div class="main__header">
@@ -26,15 +28,16 @@
         </ul>
 
     </div>
-
-    {% for recipe in page %}
-        {% include "recipe_item.html" with recipe=recipe %}
-    {% endfor %}
-
-    {% if page.has_other_pages %}
-        {% include "paginator.html" with items=page paginator=paginator%}
-    {% endif %}
-
+    
+    <div class="card-list">
+        {% for recipe in page %}
+            {% include "recipe_item.html" with recipe=recipe %}
+        {% endfor %}
+    </div>
+    
+        {% if page.has_other_pages %}
+            {% include "paginator.html" with items=page paginator=paginator%}
+        {% endif %}
 </main>
 {% endblock content %}
 {% block js %}

@@ -1,8 +1,6 @@
-<div class="card-list">
-        
     <div class="card" data-id="120">
         {% load thumbnail %}
-        {% thumbnail recipe.image "960x339" crop="center" upscale=True as im %}
+        {% thumbnail recipe.image "960x339" as im %}
         <a href="{% url 'recipe' recipe.author.username recipe.id %}" class="link" target="_blank"><img src="{{ im.url }}" class="card__image"></a>
         {% endthumbnail %}
         
@@ -20,16 +18,17 @@
             </ul>
 
             <div class="card__items card__items_column">
-                <p class="card__text"><span class="icon-time"></span>&#160;&#160;&#160;{{ recipe.time }}</p>
+                <p class="card__text"><span class="icon-time"></span>&#160;&#160;{{ recipe.time }}&#160;мин</p>
                 <p class="card__text"><span class="icon-user"></span><a href="{% url 'profile' recipe.author.username %}" style="text-decoration: none" style="color: black">&#160;&#160;&#160;{{ recipe.author }}</a></p>
             </div>
-
+            
         </div>
 
         <div class="card__footer">
             <button class="button button_style_light-blue" name="purchpurchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+            {% if user.is_authenticated %}
+            <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+            {% endif %}
         </div>
 
     </div>
-
-</div>

@@ -5,6 +5,8 @@
 <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock static %}
 {% block content %}
+{% include 'nav.html' with index=True %}
+
 <main class="main container">
     
     <div class="main__header">
@@ -43,9 +45,9 @@
 </main>
 {% endblock content %}
 {% block js %}
-<script src="{% static 'js/config/config.js' %}"></script>
 <script src="{% static 'js/components/MainCards.js' %}"></script>
 <script src="{% static 'js/components/Purchpurachases.js' %}"></script>
+<script src="{% static 'js/config/config.js' %}"></script>
 <script src="{% static 'js/components/CardList.js' %}"></script>
 <script src="{% static 'js/components/Header.js' %}"></script>
 <script src="{% static 'js/api/Api.js' %}"></script>

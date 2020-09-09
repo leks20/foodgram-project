@@ -15,7 +15,7 @@
     
     <div class="card-list">
     {% for subscription in page %}
-        {% include "subscription_item.html" with subscription=subscription recipes_list=recipes_list %}
+        {% include "subscription_item.html" with subscription=subscription recipe_dict=recipe_dict %}
     {% endfor %}
 
     </div>

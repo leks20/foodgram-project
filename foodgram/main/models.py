@@ -49,12 +49,12 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    title = models.CharField('Наименование', max_length=200)
+    title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='main/', null=True, blank=True)
-    description = models.TextField('Описание')
+    description = models.TextField()
     tags = models.ManyToManyField(Tag)
-    ingredients = models.ManyToManyField(Ingredient, through='Amount')
-    time = models.IntegerField('Время приготовления')
+    ingredients = models.ManyToManyField(Ingredient, through='Amount', through_fields=('recipe', 'ingredient'))
+    time = models.IntegerField()
 
     def __str__(self):
         return self.title
@@ -79,6 +79,9 @@ class Favorite(models.Model):
         on_delete=models.CASCADE,
         related_name="favorites"
     )
+
+    def __str__(self):
+        return self.recipe.title
 
 
 class Subscription(models.Model):

@@ -5,12 +5,12 @@ const header = new Header(counterId);
 const configButton = {
     subscribe: {
         attr: 'data-out',
-        default: {
+        active: {
             class: 'button_style_blue',
             text: 'Отписаться'
         },
-        active: {
-            class: 'button_style_blue',
+        default: {
+            class: 'button_style_light-blue-outline',
             text: `Подписаться на автора`
         }
     }

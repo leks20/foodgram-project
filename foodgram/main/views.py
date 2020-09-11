@@ -31,7 +31,7 @@ def index(request):
 
 
 def profile(request, username):
-    following = False
+    follower = False
     follow_button = False
 
     profile = get_object_or_404(User, username=username)
@@ -41,7 +41,7 @@ def profile(request, username):
         follow_button = True
 
         if Subscription.objects.filter(user=request.user, author=profile).exists():
-            following = True
+            follower = True
 
     paginator = Paginator(recipes_profile, 6)
     page_number = request.GET.get('page')
@@ -51,15 +51,15 @@ def profile(request, username):
         'paginator': paginator,
         'page': page,
         'profile': profile,
-        'following': following,
+        'follower': follower,
         'follow_button': follow_button,
         }
         )
 
 
 def recipe_view(request, username, recipe_id):
-    author = False
-    # follower = False
+    owner = False
+    follower = False
 
     recipe = Recipe.objects.select_related('author').get(pk=recipe_id)
 
@@ -67,15 +67,15 @@ def recipe_view(request, username, recipe_id):
         return render(request, 'singlePageNotAuth.html', {'recipe': recipe})
 
     if request.user.username == recipe.author.username:
-        author = True
+        owner = True
 
-    # if Subscription.objects.filter(user=request.user, author=author).exists():
-    #     follower = True
+    if Subscription.objects.filter(user=request.user, author=recipe.author).exists():
+        follower = True
 
     return render(request, 'singlePage.html', {
         'recipe': recipe,
-        'author': author,
-        # 'follower': follower,
+        'owner': owner,
+        'follower': follower,
         })
 
 
@@ -84,7 +84,7 @@ def new_recipe(request):
     return render(request, "formRecipe.html", context)
 
 
-def recipe_edit(request, username, recipe_id):
+def recipe_edit(request, recipe_id):
     context = {}
     return render(request, "formChangeRecipe.html", context)
 
@@ -122,8 +122,9 @@ def purchases(request):
 
 
 @login_required
-def subscriptions(request, author_id=None):
-    import pdb; pdb.set_trace()
+def subscriptions(request, author_id):
+    
+    # import pdb; pdb.set_trace()
 
     # подписаться на автора
     if request.method == "POST":

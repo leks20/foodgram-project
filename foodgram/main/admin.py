@@ -18,7 +18,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('title', 'unit',)
+    list_display = ('title', 'dimension',)
     list_filter = ('title',)
 
 

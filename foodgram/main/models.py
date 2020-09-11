@@ -34,7 +34,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     title = models.CharField(max_length=200)
-    unit = models.CharField(max_length=50)
+    dimension = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
@@ -68,6 +68,9 @@ class Amount(models.Model):
         Ingredient, on_delete=models.CASCADE, related_name='ingredients'
     )
     quantity = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return self.ingredient.title
 
 
 class Favorite(models.Model):
@@ -115,3 +118,6 @@ class ShopList(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='shop_list'
     )
+
+    def __str__(self):
+        return self.recipe.title

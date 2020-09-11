@@ -11,7 +11,6 @@
                 {% for author, recipes in recipe_dict.items %}
                     {% if author == subscription%}
                         {% for recipe in recipes %}
-                            {% if forloop.counter < 4 %}
                             <li class="card-user__item">
                                 <div class="recipe">
                                     {% load thumbnail %}
@@ -22,7 +21,6 @@
                                     <p class="recipe__text"><span class="icon-time"></span>&#160;&#160;{{ recipe.time }}&#160;мин</p>
                                 </div>
                             </li>
-                            {% endif %}
                         {% endfor%}
                     {% endif %}
                 {% endfor %}

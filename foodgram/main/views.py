@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from main.models import Amount, Favorite, Subscription, Ingredient, Recipe, User
+from main.models import Amount, Favorite, ShopList, Subscription, Ingredient, Recipe, User
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
+import json
+from django.http import JsonResponse
 
 
 def index(request):
@@ -55,15 +57,11 @@ def profile(request, username):
         )
 
 
-def new_recipe(request):
-    context = {}
-    return render(request, "formRecipe.html", context)
-
-
 def recipe_view(request, username, recipe_id):
+    author = False
+    # follower = False
 
     recipe = Recipe.objects.select_related('author').get(pk=recipe_id)
-    author = False
 
     if not request.user.is_authenticated:
         return render(request, 'singlePageNotAuth.html', {'recipe': recipe})
@@ -71,7 +69,19 @@ def recipe_view(request, username, recipe_id):
     if request.user.username == recipe.author.username:
         author = True
 
-    return render(request, 'singlePage.html', {'recipe': recipe, 'author': author})
+    # if Subscription.objects.filter(user=request.user, author=author).exists():
+    #     follower = True
+
+    return render(request, 'singlePage.html', {
+        'recipe': recipe,
+        'author': author,
+        # 'follower': follower,
+        })
+
+
+def new_recipe(request):
+    context = {}
+    return render(request, "formRecipe.html", context)
 
 
 def recipe_edit(request, username, recipe_id):
@@ -79,6 +89,7 @@ def recipe_edit(request, username, recipe_id):
     return render(request, "formChangeRecipe.html", context)
 
 
+@login_required
 def favorites(request):
     favorite_ids = Favorite.objects.filter(user=request.user).values('recipe_id')
     recipe_list = Recipe.objects.filter(id__in=favorite_ids)
@@ -95,41 +106,57 @@ def favorites(request):
     )
 
 
+@login_required
 def purchases(request):
-    context = {}
-    return render(request, "shopList.html", context)
+
+    shop_list_ids = ShopList.objects.filter(user=request.user).values_list('recipe_id')
+    shop_list_count = ShopList.objects.filter(user=request.user).count()
+
+    purchases = Recipe.objects.filter(id__in=shop_list_ids)
+
+    return render(request, "shopList.html", {
+        'purchases': purchases,
+        'shop_list_count': shop_list_count
+    }
+    )
 
 
 @login_required
-def profile_follow(request, username):
-    author = get_object_or_404(User, username=username)
-    if request.user == author or Subscription.objects.filter(
-            user=request.user, author=author).exists():
-        return redirect("profile", username=username)
-    else:
+def subscriptions(request, author_id=None):
+    import pdb; pdb.set_trace()
+
+    # подписаться на автора
+    if request.method == "POST":
+        author_id = json.loads(request.body).get('id')
+        author = get_object_or_404(User, id=author_id)
+
+        if request.user == author or Subscription.objects.filter(user=request.user, author=author).exists():
+            return JsonResponse({'success': 'false'})
+
         Subscription.objects.create(user=request.user, author=author)
-        return redirect("profile", username=username)
+        return JsonResponse({'success': 'true'})
+
+    # отписаться от автора
+    elif request.method == "DELETE":
+        author = get_object_or_404(User, id=author_id)
+
+        removed = Subscription.objects.filter(user=request.user, author=author).delete()
+
+        if removed:
+            return JsonResponse({'success': 'true'})
+
+        return JsonResponse({'success': 'false'})
 
 
 @login_required
-def profile_unfollow(request, username):
-    author = get_object_or_404(User, username=username)
-    if request.user == author:
-        return redirect("profile", username=username)
-    else:
-        following = Subscription.objects.get(user=request.user, author=author)
-        following.delete()
-        return redirect("profile", username=username)
-
-
-def subscriptions(request):
+def my_follow(request):
 
     subscription_ids = Subscription.objects.filter(user=request.user).values('author_id')
     subscriptions = User.objects.filter(id__in=subscription_ids).annotate(recipe_count=Count('recipes'))
 
     recipe_dict = {}
     for sub in subscriptions:
-        recipe_dict[sub] = Recipe.objects.filter(author=i)
+        recipe_dict[sub] = Recipe.objects.filter(author=sub).order_by('-pub_date')[:3]
 
     paginator = Paginator(subscriptions, 6)
     page_number = request.GET.get('page')

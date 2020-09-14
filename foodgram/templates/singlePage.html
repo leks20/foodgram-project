@@ -20,19 +20,31 @@
         <div class="single-card__info">
             
             <div class="single-card__header-info">
-                <h1 class="single-card__title">{{ recipe.title }}</h1>
-                
+                <h1 class="single-card__title">{{ recipe.title }}</h1>          
+                    
                 <div class="single-card__favorite">
-                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
-                    <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+                    {% if recipe.id in favorites_ids %}
+                        <button class="button button_style_none" name="favorites" ><span class="icon-favorite icon-favorite_big icon-favorite_active"></span></button>
+                        <div class="single-card__favorite-tooltip tooltip">Удалить из избранного</div>
+
+                    {% else %}
+                        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
+                        <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+                    {% endif %}
                 </div>
 
             </div>
 
             <ul class="single-card__items">
-                <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
-                <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                {% for tag in recipe.tags.all %}
+                    {% if tag.style == 'orange' %}
+                        <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+                    {% elif tag.style == 'green' %}
+                        <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
+                    {% else %}
+                        <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                    {% endif %}
+                {% endfor %}
             </ul>
 
             <div class="single-card__items single-card__items_column">
@@ -47,7 +59,12 @@
             </div>
             
             <ul class="single-card__items">
-                <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
+                {% if not in_shop_list %}
+                    <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus button-icon"></span> Добавить в покупки</button></li>
+                {% else %}
+                    <li class="single-card__item"><button class="button button_style_blue-outline" name="purchases"><span class="icon-check button-icon"></span> Рецепт добавлен</button></li>
+                {% endif%}
+                
                 {% if not owner %}
                     {% if not follower %}
                         <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out="">Подписаться на автора</button></li>
@@ -61,13 +78,22 @@
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Ингридиенты:</h3>
                 <div class="single-card__items single-card__items_column">
-                    <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                    <p class=" single-card__section-item">Молоко - 200 мл.</p>
-                    <p class=" single-card__section-item">Тосты - 4 шт.</p>
-                    <p class=" single-card__section-item">Сахар 2 сл.л.</p>
-                    <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                    <p class=" single-card__section-item">Молоко - 200 мл.</p>
-                </div>
+                    {% for amount in recipe.recipe_amount.all %}
+                        <p class=" single-card__section-item">{{ amount.ingredient.title }} - {{ amount.quantity }} {{ amount.ingredient.dimension }}</p>
+                    {% endfor %}
+
+
+                    <!-- for topping in super_pep.toppings.all():
+                        for top_amt in topping.topping_amount.all():
+                            print(topping.name, top_amt.amount, top_amt.get_amount_display()) -->
+                
+            
+            
+            
+            
+            
+            
+            </div>
             </div>
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Описание:</h3>

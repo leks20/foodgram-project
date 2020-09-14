@@ -24,9 +24,9 @@ class User(AbstractUser):
 
 
 class Tag(models.Model):
-    name = models.CharField('Тег', max_length=50)
+    value = models.CharField('Значение', max_length=50, null=True)
     style = models.CharField('Стиль для шаблона', max_length=50, null=True)
-    human_name = models.CharField('Имя для шаблона', max_length=50, null=True)
+    name = models.CharField('Имя для шаблона', max_length=50, null=True)
 
     def __str__(self):
         return self.name
@@ -52,7 +52,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='main/', null=True, blank=True)
     description = models.TextField()
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, related_name='recipes')
     ingredients = models.ManyToManyField(Ingredient, through='Amount', through_fields=('recipe', 'ingredient'))
     time = models.IntegerField()
 
@@ -62,7 +62,7 @@ class Recipe(models.Model):
 
 class Amount(models.Model):
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='recipes'
+        Recipe, on_delete=models.CASCADE, related_name='recipe_amount'
     )
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.CASCADE, related_name='ingredients'

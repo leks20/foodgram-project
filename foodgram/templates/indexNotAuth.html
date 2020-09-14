@@ -6,6 +6,7 @@
 {% endblock static %}
 {% block content %}
 {% include 'nav.html' with index=True %}
+{% csrf_token %}
 
 <main class="main container">
     
@@ -32,7 +33,7 @@
     <div class="card-list">
 
         {% for recipe in page %}
-            {% include "recipe_item.html" with recipe=recipe %}
+            {% include "recipe_item.html" with recipe=recipe shop_list_ids=shop_list_ids favorites_ids=favorites_ids%}
         {% endfor %}
 
     </div>

@@ -49,4 +49,4 @@ class ShopListAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'style', 'human_name')
+    list_display = ('value', 'style', 'name')

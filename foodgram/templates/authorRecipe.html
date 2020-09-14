@@ -4,9 +4,9 @@
 {% load static %}
     <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock static %}
-
 {% block content %}
 {% include 'nav.html' with index=True %}
+{% load tag_filters %}
 {% csrf_token %}
 
  <main class="main container">
@@ -15,18 +15,18 @@
         <h1 class="main__title">{{ profile }}</h1>
         
         <ul class="tags">
-            <li class="tags__item">
-                <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></a>
-                <span class="tags__label">Завтрак</span>
-            </li>
-            <li class="tags__item">
-                <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
-                <span for="lunch" class="tags__label">Обед</span>
-            </li>
-            <li class="tags__item">
-                <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
-                <label for="dinner" class="tags__label">Ужин</label>
-            </li>
+            {% with filter_values=request.GET|get_filter_values %}
+                {% for tag in all_tags %}
+                    <li class="tags__item">
+                        <a
+                            id="{{ tag.value }}"
+                            class="tags__checkbox tags__checkbox_style_{{ tag.style }} 
+                            {% if tag.value in filter_values %}tags__checkbox_active {% endif %}"
+                            href="{{profile.username}}?{{ request|get_filter_link:tag}}"></a>
+                        <span class="tags__label">{{ tag.name }}</span>
+                    </li>
+                {% endfor %}
+            {% endwith %}
         </ul>
     </div>
 
@@ -43,24 +43,27 @@
     
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipe_item.html" with recipe=recipe %}
+            {% include "recipe_item.html" with recipe=recipe favorites_ids=favorites_ids%}
         {% endfor %}
     </div>
 
     {% if page.has_other_pages %}
-        {% include "paginator.html" with items=page paginator=paginator%}
+        {% include "paginator.html" with items=page paginator=paginator tags_for_page=tags_list%}
     {% endif %}
 </main>
 {% endblock content %}
 
 {% block js %}
-  <script src="{% static 'js/config/config.js' %}"></script>
   <script src="{% static 'js/components/MainCards.js' %}"></script>
-  <script src="{% static 'js/components/Subscribe.js' %}"></script>
   <script src="{% static 'js/components/Purchases.js' %}"></script>
   <script src="{% static 'js/components/Favorites.js' %}"></script>
-  <script src="{% static 'js/components/CardList.js' %}"></script>
+  <script src="{% static 'js/components/Subscribe.js' %}"></script>
+
+  <script src="{% static 'js/config/config.js' %}"></script>
+  <script src="{% static 'js/components/AuthorRecipe.js' %}"></script>
   <script src="{% static 'js/components/Header.js' %}"></script>
+
+  <!-- <script src="{% static 'js/components/CardList.js' %}"></script> -->
   <script src="{% static 'js/api/Api.js' %}"></script>
   <script src="{% static 'authorRecipe.js' %}"></script>
 {% endblock js%}

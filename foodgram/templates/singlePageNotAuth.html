@@ -23,9 +23,15 @@
             </div>
             
             <ul class="single-card__items">
-                <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
-                <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                {% for tag in recipe.tags.all %}
+                    {% if tag.style == 'orange' %}
+                        <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+                    {% elif tag.style == 'green' %}
+                        <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
+                    {% else %}
+                        <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                    {% endif %}
+                {% endfor %}
             </ul>
 
             <div class="single-card__items single-card__items_column">
@@ -40,12 +46,9 @@
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Ингридиенты:</h3>
                 <div class="single-card__items single-card__items_column">
-                    <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                    <p class=" single-card__section-item">Молоко - 200 мл.</p>
-                    <p class=" single-card__section-item">Тосты - 4 шт.</p>
-                    <p class=" single-card__section-item">Сахар 2 сл.л.</p>
-                    <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                    <p class=" single-card__section-item">Молоко - 200 мл.</p>
+                    {% for amount in recipe.recipe_amount.all %}
+                        <p class=" single-card__section-item">{{ amount.ingredient.title }} - {{ amount.quantity }} {{ amount.ingredient.dimension }}</p>
+                    {% endfor %}
                 </div>
             </div>
             

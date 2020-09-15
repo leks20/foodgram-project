@@ -6,7 +6,7 @@
 {% endblock static %}
 {% block content %}
 {% include 'nav.html' with shop_list=True %}
-
+{% csrf_token %}
 
 <main class="main container">
     
@@ -28,11 +28,11 @@
                         <p class="recipe__text"><span class="icon-time"></span>&#160;&#160;{{ recipe.time }}&#160;мин</p>
                     </div>
 
-                    <a href="#" class="shopping-list__button link">Удалить</a>
+                    <a href="{% url 'shop_list' %}?recipe_id={{recipe.id}}" class="shopping-list__button link">Удалить</a>
                 </li>
             {% endfor %}
         </ul>
-        <a href="#"><button class="button button_style_blue">Скачать список</button></a>
+        <a href="{% url 'get_purchases' %}"><button class="button button_style_blue">Скачать список</button></a>
     
     </div>
 </main>

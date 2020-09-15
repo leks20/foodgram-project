@@ -7,7 +7,7 @@ from django.db.models import Count
 import json
 from django.http import JsonResponse
 from .forms import RecipeCreateForm
-from .utils import get_ingredients
+from .utils import get_ingredients, get_tags_for_edit
 
 
 def index(request):
@@ -53,7 +53,7 @@ def index(request):
 def profile(request, username):
     follower = False
     follow_button = False
-    
+
     tags_list = request.GET.getlist('filters')
     all_tags = Tag.objects.all()
 
@@ -62,7 +62,7 @@ def profile(request, username):
         tags__value__in=tags_list).select_related('author').order_by("-pub_date").distinct()
 
     favorites_ids = [id[0] for id in list(Favorite.objects.values_list('recipe_id'))]
-    
+
     if request.user.is_authenticated:
         shop_list_count = ShopList.objects.filter(user=request.user).count()
     else:
@@ -142,52 +142,94 @@ def ingredients(request):
 
 
 def new_recipe(request):
-    # import pdb; pdb.set_trace()
-
     shop_list_count = ShopList.objects.filter(user=request.user).count()
-    context = {
-        'shop_list_count': shop_list_count,
-    }
-
-    form = RecipeCreateForm(request.POST or None, files=request.FILES or None)
-
 
     if request.method == "POST":
+        form = RecipeCreateForm(request.POST or None, files=request.FILES or None)
 
         if form.is_valid():
+
             my_recipe = form.save(commit=False)
             my_recipe.author = request.user
             my_recipe.save()
 
             ingredients = get_ingredients(request)
 
-            print(ingredients)
-            
             for title, quantity in ingredients.items():
                 ingredient = Ingredient.objects.get(title=title)
                 amount = Amount(recipe=my_recipe, ingredient=ingredient, quantity=quantity)
                 amount.save()
             
             form.save_m2m()
-
-            # import pdb; pdb.set_trace()
-
             return redirect('recipe', recipe_id=my_recipe.id, username=request.user.username)
 
-        print(request.POST)
-
-
-        context['form'] = form
-        return render(request, "formRecipe.html", context)
-
-    context['form'] = form
-    return render(request, "formRecipe.html", context)
+    form = RecipeCreateForm()
+    return render(request, "formRecipe.html", {
+        'shop_list_count': shop_list_count,
+        'form': form,
+    })
 
 
 @login_required
 def recipe_edit(request, username, recipe_id):
-    context = {}
-    return render(request, "formChangeRecipe.html", context)
+    shop_list_count = ShopList.objects.filter(user=request.user).count()
+
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    author = get_object_or_404(User, id=recipe.author_id)
+    all_tags = recipe.tags.values_list('value', flat=True)
+
+    if request.user != author:
+        return redirect("recipe", username=username, recipe_id=recipe_id)
+    
+    if request.method == 'POST':
+        recipe_tags = get_tags_for_edit(request) # [QuerySet, QuerySet...]
+        recipe_ingredients = get_ingredients(request) # {...}
+
+        form = RecipeCreateForm(request.POST, files=request.FILES or None, instance=recipe)
+        print(form.errors)
+
+        if form.is_valid():
+            print('VALID')
+
+            # new_recipe = form.save(commit=False)
+            # new_recipe.pub_date_at = dt.datetime.today()
+            # new_recipe.ingredients = recipe_data.get('ingredients')
+            # new_recipe.save()
+            # new_recipe.tags.set(recipe_data.get('tags'))
+            # return redirect('recipe_item', recipe_id=recipe_id)           
+            
+            my_recipe = form.save(commit=False)
+            for title, quantity in recipe_ingredients.items():
+                ingredient = Ingredient.objects.get(title=title)
+                amount = Amount(recipe=my_recipe, ingredient=ingredient, quantity=quantity)
+                amount.save()
+            my_recipe.tags.set(recipe_tags)
+            my_recipe.save()
+
+            return redirect('recipe', recipe_id=recipe.id, username=request.user.username)
+
+
+
+
+    form = RecipeCreateForm(instance=recipe)
+    return render(request, "formChangeRecipe.html", {
+        'shop_list_count': shop_list_count,
+        'form': form,
+        'recipe': recipe,
+        'all_tags': all_tags,
+    })
+
+
+@login_required
+def recipe_delete(request, username, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    author = get_object_or_404(User, id=recipe.author_id)
+
+    if request.user != author:
+        return redirect("recipe", username=username, recipe_id=recipe_id)
+    
+    recipe.delete()
+    return redirect("profile", username=username)
 
 
 @login_required
@@ -210,7 +252,6 @@ def favorites(request):
         'paginator': paginator,
         'page': page,
         'shop_list_ids': shop_list_ids,
-        'favorites_ids': favorites_ids,
         'favorites_ids': favorites_ids,
         'shop_list_count': shop_list_count,
         'all_tags': all_tags,
@@ -245,8 +286,12 @@ def change_favorites(request, recipe_id):
         return JsonResponse({'success': 'false'})
 
 
+# отображение страницы со списком покупок
 @login_required
 def shop_list(request):
+    if request.GET:
+        recipe_id = request.GET.get('recipe_id')
+        ShopList.objects.get(recipe__id=recipe_id).delete()
 
     shop_list_ids = ShopList.objects.filter(user=request.user).values_list('recipe_id')
     shop_list_count = ShopList.objects.filter(user=request.user).count()
@@ -258,6 +303,21 @@ def shop_list(request):
         'shop_list_count': shop_list_count
     }
     )
+
+
+# скачать лист покупок
+@login_required
+def get_purchases(request):
+    # получаем список рецептов, находящихся в ShopList 
+    recipes = Recipe.objects.filter(id__in=ShopList.objects.values_list('recipe_id', flat=True))
+    
+    
+    
+    
+    
+    with open('shop_list.txt', w) as file:
+
+    return None
 
 
 @login_required

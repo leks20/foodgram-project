@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+
 from .models import Tag
 
 
@@ -7,7 +8,8 @@ def get_ingredients(request):
     for key in request.POST:
         if key.startswith('nameIngredient'):
             ing_num = key[15:]
-            ingredients[request.POST[key]] = request.POST['valueIngredient_' + ing_num]
+            ingredients[request.POST[key]] = request.POST[
+                                                'valueIngredient_' + ing_num]
     return ingredients
 
 

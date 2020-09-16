@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
@@ -53,7 +53,9 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to='main/', null=True, blank=True)
     description = models.TextField()
     tags = models.ManyToManyField(Tag, related_name='recipes')
-    ingredients = models.ManyToManyField(Ingredient, through='Amount', through_fields=('recipe', 'ingredient'))
+    ingredients = models.ManyToManyField(
+        Ingredient, through='Amount', through_fields=('recipe', 'ingredient')
+    )
     time = models.IntegerField()
 
     def __str__(self):

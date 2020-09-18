@@ -35,17 +35,7 @@
 
             </div>
 
-            <ul class="single-card__items">
-                {% for tag in recipe.tags.all %}
-                    {% if tag.style == 'orange' %}
-                        <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                    {% elif tag.style == 'green' %}
-                        <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
-                    {% else %}
-                        <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
+            {% include 'tags.html' %}
 
             <div class="single-card__items single-card__items_column">
                 <p class="single-card__text"><span class="icon-time"></span>&#160;&#160;{{ recipe.time }}&#160;мин</p>

@@ -4,7 +4,6 @@ from .models import (Amount, Favorite, Ingredient, Recipe, ShopList,
                      Subscription, Tag, User)
 
 
-@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'show_favorites')
     list_filter = ('author', 'title', 'tags',)
@@ -16,37 +15,40 @@ class RecipeAdmin(admin.ModelAdmin):
     show_favorites.short_description = "Favorite"
 
 
-@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('title', 'dimension',)
     list_filter = ('title',)
 
 
-@admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_filter = ('email', 'first_name',)
 
 
-@admin.register(Amount)
 class AmountAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('follower', 'following')
 
 
-@admin.register(ShopList)
 class ShopListAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('value', 'style', 'name')
+
+
+admin.site.register(Amount, AmountAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(ShopList, ShopListAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(User, UserAdmin)

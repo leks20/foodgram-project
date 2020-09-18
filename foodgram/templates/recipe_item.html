@@ -9,14 +9,8 @@
 
             <ul class="card__items">
                 {% for tag in recipe.tags.all %}
-                {% if tag.style == 'orange' %}
-                    <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                {% elif tag.style == 'green' %}
-                    <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-                {% else %}
-                    <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
-                {% endif %}
-            {% endfor %}
+                    <li class="card__item"><span class="badge badge_style_{{ tag.style }}">{{ tag.name }}</span></li>
+                {% endfor %}
             </ul>
 
             <div class="card__items card__items_column">

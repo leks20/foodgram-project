@@ -4,19 +4,20 @@ from django.http import QueryDict
 register = template.Library()
 
 
-# создание списка из параметорв breakfast/lunch/dinner
-# полученных в форме QueryDict из GET-запроса
 @register.filter(name='get_filter_values')
 def get_filter_values(value):
+    """
+    Cоздание списка из параметорв breakfast/lunch/dinner
+    полученных в форме QueryDict из GET-запроса
+    """
     return value.getlist('filters')
 
 
-# изменение строки запроса в соответствии с выбранными тегами
 @register.filter(name='get_filter_link')
 def get_filter_values(request, tag):
+    """Изменение строки запроса в соответствии с выбранными тегами"""
     new_request = request.GET.copy()
-
-    # если тег уже есть в списке, он должен
+    # eсли тег уже есть в списке, он должен
     # выключиться при нажатии в браузере - удаляем его
     if tag.value in request.GET.getlist('filters'):
         filters = new_request.getlist('filters')

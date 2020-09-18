@@ -58,6 +58,9 @@ class Recipe(models.Model):
     )
     time = models.IntegerField()
 
+    class Meta:
+        ordering = ['-pub_date']
+
     def __str__(self):
         return self.title
 

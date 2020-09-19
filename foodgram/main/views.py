@@ -35,8 +35,6 @@ def index(request):
         'recipe_id', flat=True
     )]
 
-    print(favorites_ids)
-
     paginator = Paginator(recipe_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -168,7 +166,7 @@ def recipe_view(request, username, recipe_id):
 def ingredients(request):
     """
     Функция для подсказки при написании ингредиента в форме создания рецепта
-    возвращает JSON с ингредиентами по первым введенным буквам
+    возвращает JSON с ингредиентами по первым введенным буквам.
     """
     text = request.GET['query']
     ingredients = Ingredient.objects.filter(
@@ -385,7 +383,7 @@ def change_favorites(request, recipe_id):
 
 @login_required
 def shop_list(request):
-    """Отображение страницы со списком покупок"""
+    """Отображение страницы со списком покупок."""
     if request.GET:
         recipe_id = request.GET.get('recipe_id')
         ShopList.objects.get(
@@ -412,35 +410,36 @@ def shop_list(request):
 
 @login_required
 def get_purchases(request):
-    """Скачать лист покупок"""
-    # получаем список рецептов, находящихся в ShopList
+    """Скачать лист покупок."""
     recipes = Recipe.objects.filter(
-        id=shop_list__id
+        shop_list__user=request.user
+    )
+
+    ing: dict = {}
+
+    for recipe in recipes:
+        ingredients = recipe.ingredients.values_list(
+            'title', 'dimension'
+        )
+        amount = recipe.recipe_amount.values_list(
+            'quantity', flat=True
         )
 
-    print(recipes)
+        for num in range(len(ingredients)):
+            title: str = ingredients[num][0]
+            dimension: str = ingredients[num][1]
+            quantity: int = amount[num]
 
-    ing_dict = {}
-    # проходим циклом по каждому ингредиенту в каждом рецепте
-    for recipe in recipes:
-        for amount in recipe.recipe_amount.all():
-            # если наименование ингредиента есть в словаре -
-            # складываем количество
-            if amount.ingredient.title in ing_dict.keys():
-                value = [float(ing_dict[amount.ingredient.title][0]+float(
-                    amount.quantity)), amount.ingredient.dimension]
-                ing_dict[amount.ingredient.title] = value
-            # если нет - добавляем в словарь ингредиент
-            # в формате {'сыр': [200, 'г']}
+            if title in ing.keys():
+                ing[title] = [ing[title][0] + quantity, dimension]
             else:
-                value = [float(amount.quantity), amount.ingredient.dimension]
-                ing_dict[amount.ingredient.title] = value
+                ing[title] = [quantity, dimension]
 
     response = HttpResponse(content_type='txt/csv')
     response['Content-Disposition'] = 'attachment; filename="shop_list.txt"'
     writer = csv.writer(response)
 
-    for key, value in ing_dict.items():
+    for key, value in ing.items():
         writer.writerow([f'{key} ({value[1]}) - {value[0]}'])
 
     return response
@@ -513,19 +512,14 @@ def subscriptions(request, author_id):
 
 @login_required
 def my_follow(request):
-
-    subscription_ids = Subscription.objects.filter(
-        user=request.user
-    ).values(
-        'author_id'
-    )
     subscriptions = User.objects.filter(
-        id__in=subscription_ids
+        following__user=request.user
     ).annotate(
         recipe_count=Count(
             'recipes'
         )
     )
+
     shop_list_count = ShopList.objects.filter(
         user=request.user
     ).count()

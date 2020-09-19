@@ -8,14 +8,14 @@ register = template.Library()
 def get_filter_values(value):
     """
     Cоздание списка из параметорв breakfast/lunch/dinner
-    полученных в форме QueryDict из GET-запроса
+    полученных в форме QueryDict из GET-запроса.
     """
     return value.getlist('filters')
 
 
 @register.filter(name='get_filter_link')
 def get_filter_values(request, tag):
-    """Изменение строки запроса в соответствии с выбранными тегами"""
+    """Изменение строки запроса в соответствии с выбранными тегами."""
     new_request = request.GET.copy()
     # eсли тег уже есть в списке, он должен
     # выключиться при нажатии в браузере - удаляем его

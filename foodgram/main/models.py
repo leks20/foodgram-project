@@ -72,7 +72,7 @@ class Amount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.CASCADE, related_name='ingredients'
     )
-    quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    quantity = models.FloatField()
 
     def __str__(self):
         return self.ingredient.title

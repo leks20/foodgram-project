@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock static %}
 {% block content %}
-{% include 'nav.html' with index=True %}
+{% include 'includes/nav.html' with index=True %}
 {% load tag_filters %}
 {% csrf_token %}
 
@@ -14,18 +14,18 @@
     <div class="main__header">
         <h1 class="main__title">Рецепты</h1>
         
-        {% include 'tags_index.html' %}
+        {% include 'includes/tags_index.html' %}
 
     </div>
     
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipe_item.html" with recipe=recipe shop_list_ids=shop_list_ids favorites_ids=favorites_ids%}
+            {% include "includes/recipe_item.html" with recipe=recipe %}
         {% endfor %}
     </div>
     
         {% if page.has_other_pages %}
-            {% include "paginator.html" with items=page paginator=paginator tags_for_page=tags_list %}
+            {% include "includes/paginator.html" with items=page paginator=paginator tags_for_page=tags_list %}
         {% endif %}
 </main>
 {% endblock content %}

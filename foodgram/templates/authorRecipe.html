@@ -5,8 +5,9 @@
     <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock static %}
 {% block content %}
-{% include 'nav.html' with index=True %}
+{% include 'includes/nav.html' with index=True %}
 {% load tag_filters %}
+{% load recipe_filters %}
 {% csrf_token %}
 
  <main class="main container">
@@ -32,7 +33,7 @@
 
     {% if follow_button %}
         <div class="author-subscribe" data-author={{ profile.id }}>
-            {% if not follower %}
+            {% if not request|is_follower:profile %}
                 <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
             {% else %}
                 <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" >Отписаться от автора</button></p>
@@ -43,12 +44,12 @@
     
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipe_item.html" with recipe=recipe favorites_ids=favorites_ids%}
+            {% include "includes/recipe_item.html" with recipe=recipe %}
         {% endfor %}
     </div>
 
     {% if page.has_other_pages %}
-        {% include "paginator.html" with items=page paginator=paginator tags_for_page=tags_list%}
+        {% include "includes/paginator.html" with items=page paginator=paginator tags_for_page=tags_list%}
     {% endif %}
 </main>
 {% endblock content %}

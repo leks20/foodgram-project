@@ -8,7 +8,7 @@
             
             <ul class="card-user__items">
 
-                {% for author, recipes in recipe_dict.items %}
+                {% for author, recipes in recipe.items %}
                     {% if author == subscription%}
                         {% for recipe in recipes %}
                             <li class="card-user__item">

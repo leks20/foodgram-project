@@ -7,7 +7,7 @@
 {% endblock static %}
 
 {% block content %}
-{% include 'nav.html' with follow=True %}
+{% include 'includes/nav.html' with follow=True %}
 {% csrf_token %}
 
 <main class="main container">
@@ -18,13 +18,13 @@
     
     <div class="card-list">
     {% for subscription in page %}
-        {% include "subscription_item.html" with subscription=subscription recipe_dict=recipe_dict %}
+        {% include "includes/subscription_item.html" with subscription=subscription recipe=recipe %}
     {% endfor %}
 
     </div>
 
     {% if page.has_other_pages %}
-        {% include "paginator.html" with items=page paginator=paginator%}
+        {% include "includes/paginator.html" with items=page paginator=paginator%}
     {% endif %}
 
 </main>

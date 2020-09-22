@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock static %}
 {% block content %}
-{% include 'nav.html' with index=True %}
+{% include 'includes/nav.html' with index=True %}
 {% csrf_token %}
 
 <main class="main container">
@@ -22,7 +22,7 @@
                 <h1 class="single-card__title">{{ recipe.title }}</h1>
             </div>
             
-            {% include 'tags.html' %}
+            {% include 'includes/tags.html' %}
 
             <div class="single-card__items single-card__items_column">
                 <p class="single-card__text"><span class="icon-time"></span>&#160;&#160;{{ recipe.time }}&#160;мин</p>

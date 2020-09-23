@@ -145,7 +145,6 @@ def new_recipe(request):
             my_recipe.save()
 
             ingredients = get_ingredients(request)
-
             for title, quantity in ingredients.items():
                 ingredient = Ingredient.objects.get(title=title)
                 amount = Amount(
@@ -273,14 +272,13 @@ def change_favorites(request, recipe_id):
             Recipe, pk=recipe_id
         )
 
-        if Favorite.objects.filter(
-            recipe=recipe
-        ).exists():
-            return JsonResponse({'success': False})
-
-        Favorite.objects.create(
+        obj, created = Favorite.objects.get_or_create(
             user=request.user, recipe=recipe
         )
+
+        if not created:
+            return JsonResponse({'success': False})
+
         return JsonResponse({'success': True})
 
     # удалить из изобранного
@@ -360,21 +358,20 @@ def purchases(request, recipe_id):
     # добавить в список покупок
     if request.method == "POST":
         recipe_id = json.loads(request.body).get('id')
-        recipe = Recipe.objects.get(pk=recipe_id)
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
 
-        if ShopList.objects.filter(
-            recipe=recipe
-        ).exists():
-            return JsonResponse({'success': False})
-
-        ShopList.objects.create(
+        obj, created = ShopList.objects.get_or_create(
             user=request.user, recipe=recipe
         )
+
+        if not created:
+            return JsonResponse({'success': False})
+
         return JsonResponse({'success': True})
 
     # удалить из списка покупок
     elif request.method == "DELETE":
-        recipe = Recipe.objects.get(pk=recipe_id)
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
 
         removed = ShopList.objects.filter(
             user=request.user, recipe=recipe

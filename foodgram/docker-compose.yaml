@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - './.env'
+  web:
+    image: leks20/foodgram:v1
+    restart: always
+    volumes:
+      - static_volume:/home/code/staticfiles
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+    env_file:
+      - './.env'
+  nginx:
+    build: ./nginx
+    volumes:
+     - static_volume:/home/code/staticfiles
+    ports:
+      - '1337:80'  
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:

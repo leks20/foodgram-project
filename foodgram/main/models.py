@@ -56,7 +56,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient, through='Amount', through_fields=('recipe', 'ingredient')
     )
-    time = models.IntegerField()
+    cooking_time = models.IntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ['-pub_date']

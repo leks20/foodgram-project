@@ -21,15 +21,15 @@ Cоздан в качестве дипломного проекта учебно
 git clone https://github.com/leks20/foodgram-project
 ```
 2) В директории проекта создайте файл .env, в котором пропишите следующие переменные окружения (для тестирования можете использовать указанные значения переменных):
-SECRET_KEY = '^k29dzdk)$y3brl78zg&hc2kcfxla(mr5et&(a64b)!(73fc1l'
-SQL_DATABASE=foodgram_db
-SQL_USER=leks20
-SQL_PASSWORD=foodgram
-SQL_HOST=db
-SQL_PORT=5432
-POSTGRES_USER=leks20
-POSTGRES_PASSWORD=foodgram
-POSTGRES_DB=foodgram_db
+- SECRET_KEY = '^k29dzdk)$y3brl78zg&hc2kcfxla(mr5et&(a64b)!(73fc1l'
+- SQL_DATABASE=foodgram_db
+- SQL_USER=leks20
+- SQL_PASSWORD=foodgram
+- SQL_HOST=db
+- SQL_PORT=5432
+- POSTGRES_USER=leks20
+- POSTGRES_PASSWORD=foodgram
+- POSTGRES_DB=foodgram_db
 3) С помощью Dockerfile и docker-compose.yaml разверните проект:
 ```
 docker-compose up --build

@@ -2,11 +2,12 @@ FROM python:3.8
 
 RUN pip install --upgrade pip
 
-WORKDIR /code
-RUN mkdir /code/staticfiles
+WORKDIR /home/app/web
+RUN mkdir /home/app/web/static
+RUN mkdir /home/app/web/media
 
-COPY . /code
+COPY . /home/app/web
 
-RUN pip install -r /code/requirements.txt
+RUN pip install -r /home/app/web/requirements.txt
 
 CMD gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000

@@ -17,6 +17,9 @@ from .utils import get_ingredients, get_tags_for_edit
 def index(request):
     tags_list = request.GET.getlist('filters')
 
+    if tags_list == []:
+        tags_list = ['breakfast', 'lunch', 'dinner']
+
     recipe_list = Recipe.objects.filter(
         tags__value__in=tags_list
     ).select_related(
@@ -53,6 +56,10 @@ def profile(request, username):
     follow_button = False
 
     tags_list = request.GET.getlist('filters')
+
+    if tags_list == []:
+        tags_list = ['breakfast', 'lunch', 'dinner']
+
     all_tags = Tag.objects.all()
 
     profile = get_object_or_404(User, username=username)
@@ -240,6 +247,10 @@ def recipe_delete(request, username, recipe_id):
 @login_required
 def favorites(request):
     tags_list = request.GET.getlist('filters')
+
+    if tags_list == []:
+        tags_list = ['breakfast', 'lunch', 'dinner']
+
     all_tags = Tag.objects.all()
 
     recipe_list = Recipe.objects.filter(
